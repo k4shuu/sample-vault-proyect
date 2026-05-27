@@ -6,19 +6,19 @@
 */
 
 /**
- * Carga las variables de entorno desde archivo .env 
+ * Carga las variables de entorno desde archivo .env
  * para no exponer claves en el código.
- * Un archivo .env es un archivo de texto plano utilizado 
- * en el desarrollo de software para almacenar variables de entorno 
- * y credenciales sensibles (claves API, credenciales de bases de datos, 
- * tokens) fuera del código fuente. Se sitúa en la raíz del proyecto, 
- * usa pares clave-valor y nunca debe subirse al control de versiones (Git). 
+ * Un archivo .env es un archivo de texto plano utilizado
+ * en el desarrollo de software para almacenar variables de entorno
+ * y credenciales sensibles (claves API, credenciales de bases de datos,
+ * tokens) fuera del código fuente. Se sitúa en la raíz del proyecto,
+ * usa pares clave-valor y nunca debe subirse al control de versiones (Git).
  */
  require('dotenv').config();
 
 /**
- * Express es un framework web minimalista, rápido y flexible para Node.js, 
- * diseñado para facilitar la creación de aplicaciones back-end y APIs. 
+ * Express es un framework web minimalista, rápido y flexible para Node.js,
+ * diseñado para facilitar la creación de aplicaciones back-end y APIs.
  * Proporciona una capa ligera de características fundamentales, \
  * como el enrutamiento y la gestión de middleware, \
  * permitiendo construir servidores web de manera eficiente \
@@ -63,7 +63,7 @@ const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 app.use('/uploads', express.static(uploadDir));
 
-// Servir archivos estáticos del FRONTEND 
+// Servir archivos estáticos del FRONTEND
 // (esto permite que el HTML acceda a ../css y ../js)
 // Como server.js está en /backend, subimos un nivel para encontrar /frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -80,14 +80,21 @@ app.use('/api/admin', adminRoutes);
  * Usar una variable de entorno NODE_ENV en el .env para usar
  * el modo testing o production.
  */
-if (process.env.NODE_ENV === 'testing') 
+if (process.env.NODE_ENV === 'testing')
 {
     app.use('/', testsRoutes);
-} 
-else 
+}
+else
 {
     app.use('/', viewRoutes);
 }
+
+app.use((err, req, res, next) => {
+    if (err && err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({Message: 'Archivo demasiado grande(Max 5MB)'})
+    }
+    return next(err);
+})
 
 // --- Manejo de errores global ---
 app.use((err, req, res, next) => {

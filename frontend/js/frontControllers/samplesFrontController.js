@@ -27,7 +27,7 @@ function renderSamplesTable(samples) {
         // Celda Nombre
         const tdName = document.createElement('td');
         tdName.textContent = s.display_name;
-        
+
         // Celda Categoría
         const tdCat = document.createElement('td');
         const spanCat = document.createElement('span');
@@ -75,8 +75,9 @@ async function deleteSample(id) {
 }
 
 // Evento para el formulario de subida
+const maxSize = 5 * 1024 * 1024;
 const uploadForm = document.getElementById('uploadForm');
-if (uploadForm) {
+if (uploadForm && uploadForm.size < maxSize) {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -94,4 +95,6 @@ if (uploadForm) {
             showModal('Error al subir', error.message);
         }
     });
+} else {
+    showModal('Error', 'El archivo supera el limite de tamaño permitido');
 }

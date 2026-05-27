@@ -7,10 +7,10 @@
 
 /**
  * Importación del módulo multer
- * Multer es un middleware de Node.js diseñado para Express, 
+ * Multer es un middleware de Node.js diseñado para Express,
  * esencial para manejar la carga de archivos (imágenes, documentos, etc.)
- * enviados en formato multipart/form-data. Simplifica la gestión 
- * de archivos al permitir configuraciones de almacenamiento en disco 
+ * enviados en formato multipart/form-data. Simplifica la gestión
+ * de archivos al permitir configuraciones de almacenamiento en disco
  * o memoria, filtrado de tipos y límites de tamaño, añadiendo un objeto
  * file o files al objeto request.
  */
@@ -41,7 +41,11 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024}
+});
 
 // 'audioFile' es el nombre del campo en el formulario
 module.exports = upload.single('audioFile');

@@ -1,5 +1,5 @@
 /**
- * Función para asegurar independencia de los tests de samples 
+ * Función para asegurar independencia de los tests de samples
  * y no depender de otro test para tener un token de sesión válido
  */
  async function okLogin()
@@ -22,12 +22,12 @@
     // 1. Asegurar y guardar una sesión válida
     await okLogin();
     const token = localStorage.getItem('test_token');
-    
+
     // 2. Realizar la petición
     const response = await fetch('/api/samples/my-samples', {
         headers: { 'Authorization': `Bearer ${token}` }
     });
-    
+
     const data = await response.json();
     testUtils.log(data);
     if (response.ok) testUtils.setSuccess(btn);
@@ -40,7 +40,7 @@ testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
     // 1. Asegurar y guardar una sesión válida
     await okLogin();
     const token = localStorage.getItem('test_token');
-    
+
     // Creamos un FormData
     const formData = new FormData();
     formData.append('display_name', 'Test Loop Pedagogico');
@@ -60,4 +60,30 @@ testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
     const data = await response.json();
     testUtils.log(data);
     if (response.ok) testUtils.setSuccess(btn);
+});
+/*
+    TEST ARCHIVO PESADO
+*/
+
+testUtils.createTestButton("Test Archivo Limite Peso", async (btn) => {
+    await okLogin();
+    const token = localStorage.getItem("test_token");
+
+    const size = 10 * 1024 * 1024 + 1;
+    const big = new Blob([new Uint8Array(size)], { type: 'audio/wav' });
+    const formData = new FormData();
+    formData.append("audioFile", big, "PruebaGrande.wav");
+    formData.append('display_name', 'Test Loop Pedagogico');
+    formData.append('category', 'Drums');
+    formData.append('bpm', '120');
+
+    const response = await fetch('/api/samples/upload', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+    });
+
+    const data = await response.json();
+    testUtils.log(data);
+    if (response.status === 413 || response.status === 500) testUtils.setSuccess(btn);
 });
