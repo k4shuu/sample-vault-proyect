@@ -20,6 +20,22 @@ class SampleController
             {
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
+            //Importo la libreria de seguridad
+            //la constante es la funcion que verifica los datos
+            const {fileTypeFromFile} = await import('file-type');
+
+            //Ruta exacta definida por Multer
+            const filePathExact = req.file.path;
+
+            //Metadatos del archivo
+            const fileMeta = await fileTypeFromFile(filePathExact);
+
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/x-flac'];
+            if (!fileMeta || !allowedTypes.includes(fileMeta.mime)){
+                fileHelper.deleteFile(`uploads/${req.file.filename}`);
+
+                return res.status(403).json({message:"El archivo no es un audio valido"});
+            };
 
             const { display_name, category, bpm } = req.body;
             
