@@ -21,5 +21,5 @@ testUtils.createTestButton("Test Tipo de Archivo Incorrecto", async(btn) =>{
 
     const data = await response.json();
     testUtils.log(data);
-    if (response.ok) testUtils.setSuccess(btn);
+    if (response.status === 415) testUtils.setSuccess(btn);
 });

@@ -34,7 +34,7 @@ class SampleController
             if (!fileMeta || !allowedTypes.includes(fileMeta.mime)){
                 fileHelper.deleteFile(`uploads/${req.file.filename}`);
 
-                return res.status(403).json({message:"El archivo no es un audio valido"});
+                return res.status(415).json({message:"El archivo no es un audio valido"});
             };
 
             const { display_name, category, bpm } = req.body;
