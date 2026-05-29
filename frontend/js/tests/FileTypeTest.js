@@ -7,7 +7,7 @@ testUtils.createTestButton("Test Tipo de Archivo Incorrecto", async(btn) =>{
     formData.append('category', 'Drums');
     formData.append('bpm', '120');
 
-    const ContenidoMalisioso = "SoyVirus";
+    const ContenidoMalicioso = "SoyVirus";
 
     // Simulamos un archivo WAV (binario vacío para la prueba)
     const blob = new Blob(["ContenidoMalisioso"], { type: 'audio/wav' });
