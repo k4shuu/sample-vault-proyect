@@ -6,7 +6,7 @@
     const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'admin', password: '12345' })
+        body: JSON.stringify({ username: 'admin', password: '123456' })
     });
     
     const { token } = await loginRes.json();
