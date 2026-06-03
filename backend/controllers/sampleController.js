@@ -21,13 +21,28 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
-            const { display_name, category, bpm } = req.body;
+            const { display_name, category, bpm: bpm_ } = req.body;
             
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "El nombre y la categoría son obligatorios." });
             }
+            //Si el bpm no esta definido o number(bpm) devuelve 0 sin almacenar un valor numerico retorna 400
+            if(bpm_ === undefined || bpm_ === null ||    String(bpm_).trim() === ""){
+                
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
+
+            }
+            const bpm = Number(bpm_);
+            const minbpm=20;
+            const maxbpm=300;
+            //Si el bpm almacena un valor numerico erroneo devuelve status 400
+            if(isNaN(bpm) || !Number.isInteger(bpm) || bpm<minbpm || bpm>maxbpm){
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
+            } 
 
             const userId = req.userId; // Proveniente del verifyToken
             const filename = req.file.filename;
