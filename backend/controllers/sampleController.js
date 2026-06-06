@@ -5,9 +5,10 @@
  * Date        : Marzo 2026
  */
 
-const fileHelper = require("../utils/fileHelper");
-const sampleRepo = require("../repositories/sampleRepo");
-const { VerifMIME } = require("../utils/fileSecurity");
+const fileHelper = require('../utils/fileHelper');
+const sampleRepo = require('../repositories/sampleRepo');
+const { VerifMIME }= require('../utils/fileSecurity');
+const { ValidarBpm } = require('../utils/fileValidator');
 
 maxSize = 5 * 1024 * 1024; // 10 MB
 
@@ -23,7 +24,9 @@ class SampleController {
                 });
             }
 
-            const filePathExact = req.file.path; // Ruta exacta del archivo subido
+            const { display_name, category, bpm } = req.body;
+
+            const filePathExact = req.file.path;
 
             const isInvalidFile = await VerifMIME(filePathExact);
 
@@ -39,14 +42,17 @@ class SampleController {
                     .json({ message: "Archivo demasiado grande" });
             }
 
-            const { display_name, category, bpm } = req.body;
-
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({
                     message: "El nombre y la categoría son obligatorios.",
                 });
+            }
+
+            if(!ValidarBpm(bpm)){
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
             }
 
             const userId = req.userId; // Proveniente del verifyToken
