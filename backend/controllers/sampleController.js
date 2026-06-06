@@ -8,6 +8,7 @@
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
 const { VerifMIME }= require('../utils/fileSecurity');
+const { ValidarBpm } = require('../utils/fileValidator');
 
 class SampleController
 {
@@ -22,6 +23,8 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
+            const { display_name, category, bpm } = req.body;
+
             const filePathExact = req.file.path;
 
             const isInvalidfile = await VerifMIME(filePathExact);
@@ -30,8 +33,7 @@ class SampleController
                 fileHelper.deleteFile(filePathExact);
                 return res.status(415).json({ message: "El archivo no es un audio valido" }); 
             }
-            
-            const { display_name, category, bpm } = req.body;
+        
             
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
@@ -39,6 +41,11 @@ class SampleController
                 return res.status(400).json({ message: "El nombre y la categoría son obligatorios." });
             }
 
+            if(!ValidarBpm(bpm)){
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
+            }
+            
             const userId = req.userId; // Proveniente del verifyToken
             const filename = req.file.filename;
             const filePath = `/uploads/${filename}`;
