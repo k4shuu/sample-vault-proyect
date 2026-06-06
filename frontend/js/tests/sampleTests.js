@@ -40,17 +40,19 @@ testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
     // 1. Asegurar y guardar una sesión válida
     await okLogin();
     const token = localStorage.getItem('test_token');
-    
-    // Creamos un FormData
+
+    // 2. Obtener archivo de audio real desde la carpeta de tests
+    const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
+    const audioBlob = await audioResponse.blob();
+
+    // 3. Crear FormData con el archivo real
     const formData = new FormData();
     formData.append('display_name', 'Test Loop Pedagogico');
     formData.append('category', 'Drums');
     formData.append('bpm', '120');
+    formData.append('audioFile', audioBlob, 'DRUM_LOOP_01.wav');
 
-    // Simulamos un archivo WAV (binario vacío para la prueba)
-    const blob = new Blob(["Simulated Audio Content"], { type: 'audio/wav' });
-    formData.append('audioFile', blob, 'DRUM_LOOP_01.wav');
-
+    // 4. Subir el sample
     const response = await fetch('/api/samples/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
@@ -59,7 +61,16 @@ testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
 
     const data = await response.json();
     testUtils.log(data);
-    if (response.ok) testUtils.setSuccess(btn);
+
+    if (response.ok) {
+        // 5. Limpiar: eliminar el sample que acabamos de subir
+        const sampleId = data.id;
+        await fetch(`/api/samples/${sampleId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        testUtils.setSuccess(btn);
+    }
 });
 testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (btn) => {
         // 1. Asegurar sesión válida y obtener token
@@ -72,8 +83,10 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         formData.append('category', 'Drums');
         formData.append('bpm', '   '); 
 
-        const blob = new Blob(["Simulated Audio Content"], { type: 'audio/wav' });
-        formData.append('audioFile', blob, 'DRUM_LOOP_01.wav');
+        const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
+        const audioBlob = await audioResponse.blob();
+
+        formData.append('audioFile', audioBlob, 'DRUM_LOOP_01.wav');
 
         // 3. ENVIAR LA PETICIÓN AL BACKEND 
         const response = await fetch('/api/samples/upload', {
@@ -93,7 +106,7 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         } else {
             testUtils.log(`Fallo el test: Se esperaba un Status 400 pero se recibió un Status ${response.status}`);
         }
-
+});
 testUtils.createTestButton("Test Tipo de Archivo Incorrecto", async(btn) =>{
     await okLogin();
     const token = localStorage.getItem('test_token');

@@ -40,7 +40,7 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
-            const { display_name, category, bpm: bpm } = req.body;
+            const { display_name, category, bpm } = req.body;
             const filePathExact = req.file.path;
 
             const isInvalidfile = await VerifMIME(filePathExact);
@@ -49,8 +49,7 @@ class SampleController
                 fileHelper.deleteFile(filePathExact);
                 return res.status(415).json({ message: "El archivo no es un audio valido" }); 
             }
-            
-            const { display_name, category, bpm } = req.body;
+        
             
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
