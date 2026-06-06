@@ -1,11 +1,11 @@
 /**
  * Test: POST /api/auth/login
  */
- testUtils.createTestButton("Test Login Correcto (Pepe y 12345)", async (btn) => {
+ testUtils.createTestButton("Test Login Correcto (Pepe y 123456)", async (btn) => {
     const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'pepe', password: '12345' }) // Usamos pepe hardcodeado
+        body: JSON.stringify({ username: 'pepe', password: '123456' }) // Usamos pepe hardcodeado
     });
     
     const data = await response.json();
@@ -42,6 +42,21 @@ testUtils.createTestButton("Test Login - Usuario Incorrecto (Juan y 12345)", asy
     testUtils.log(data);
 
     if (response.status === 401) {
+        testUtils.setSuccess(btn);
+    }
+});
+
+testUtils.createTestButton("Test Login - Sanitización y Longitud de Contraseña (pepona y 12345)", async (btn) => {
+    const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: 'pepona', password: '12345' })
+    });
+    
+    const data = await response.json();
+    testUtils.log(data);
+
+    if (response.status === 400) {
         testUtils.setSuccess(btn);
     }
 });
