@@ -8,27 +8,10 @@
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
 const { VerifMIME }= require('../utils/fileSecurity');
+const { ValidarBpm } = require('../utils/fileValidator');
 
 class SampleController
 {
-    ValidarBpm(bpm_) {
-        // 1. Si es undefined, null o un texto vacío, es inválido
-        if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
-            return false;
-        }
-
-        const bpm = Number(bpm_);
-        const minbpm = 20;
-        const maxbpm = 300;
-
-        // 2. Si no es un número entero o está fuera de rango, es inválido
-        if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
-            return false;
-        }
-
-        // 3. Si pasó todos los filtros, es válido
-        return true;
-    }
     // Método para subir un sample y guardarlo en la BD
     async uploadSample(req, res) 
     {
@@ -41,6 +24,7 @@ class SampleController
             }
 
             const { display_name, category, bpm } = req.body;
+
             const filePathExact = req.file.path;
 
             const isInvalidfile = await VerifMIME(filePathExact);
@@ -56,7 +40,8 @@ class SampleController
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "El nombre y la categoría son obligatorios." });
             }
-            if(!SampleController.prototype.ValidarBpm(bpm)){
+
+            if(!ValidarBpm(bpm)){
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
             }
