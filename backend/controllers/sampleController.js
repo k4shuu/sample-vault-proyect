@@ -7,8 +7,9 @@
 
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
+const { VerifMIME }= require('../utils/fileSecurity');
 
-class SampleController 
+class SampleController
 {
     ValidarBpm(bpm_) {
         // 1. Si es undefined, null o un texto vacío, es inválido
@@ -40,6 +41,16 @@ class SampleController
             }
 
             const { display_name, category, bpm: bpm } = req.body;
+            const filePathExact = req.file.path;
+
+            const isInvalidfile = await VerifMIME(filePathExact);
+
+            if (isInvalidfile) {
+                fileHelper.deleteFile(filePathExact);
+                return res.status(415).json({ message: "El archivo no es un audio valido" }); 
+            }
+            
+            const { display_name, category, bpm } = req.body;
             
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
@@ -50,23 +61,7 @@ class SampleController
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
             }
-            /*
-            //Si el bpm no esta definido o number(bpm) devuelve 0 sin almacenar un valor numerico retorna 400
-            if(bpm_ === undefined || bpm_ === null ||    String(bpm_).trim() === ""){
-                
-                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
-                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
-
-            }
-            const bpm = Number(bpm_);
-            const minbpm=20;
-            const maxbpm=300;
-            //Si el bpm almacena un valor numerico erroneo devuelve status 400
-            if(isNaN(bpm) || !Number.isInteger(bpm) || bpm<minbpm || bpm>maxbpm){
-                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
-                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
-            }*/ 
-
+            
             const userId = req.userId; // Proveniente del verifyToken
             const filename = req.file.filename;
             const filePath = `/uploads/${filename}`;
