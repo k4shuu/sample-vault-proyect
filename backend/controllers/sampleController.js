@@ -10,6 +10,24 @@ const sampleRepo = require('../repositories/sampleRepo');
 
 class SampleController 
 {
+    ValidarBpm(bpm_) {
+        // 1. Si es undefined, null o un texto vacío, es inválido
+        if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
+            return false;
+        }
+
+        const bpm = Number(bpm_);
+        const minbpm = 20;
+        const maxbpm = 300;
+
+        // 2. Si no es un número entero o está fuera de rango, es inválido
+        if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
+            return false;
+        }
+
+        // 3. Si pasó todos los filtros, es válido
+        return true;
+    }
     // Método para subir un sample y guardarlo en la BD
     async uploadSample(req, res) 
     {
@@ -21,13 +39,18 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
-            const { display_name, category, bpm: bpm_ } = req.body;
+            const { display_name, category, bpm: bpm } = req.body;
             
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "El nombre y la categoría son obligatorios." });
             }
+            if(!SampleController.prototype.ValidarBpm(bpm)){
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
+            }
+            /*
             //Si el bpm no esta definido o number(bpm) devuelve 0 sin almacenar un valor numerico retorna 400
             if(bpm_ === undefined || bpm_ === null ||    String(bpm_).trim() === ""){
                 
@@ -42,7 +65,7 @@ class SampleController
             if(isNaN(bpm) || !Number.isInteger(bpm) || bpm<minbpm || bpm>maxbpm){
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "BPM inválido. Ingrese un valor numérico correcto" });
-            } 
+            }*/ 
 
             const userId = req.userId; // Proveniente del verifyToken
             const filename = req.file.filename;
