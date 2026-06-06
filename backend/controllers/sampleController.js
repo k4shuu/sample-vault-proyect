@@ -7,6 +7,7 @@
 
 const fileHelper = require("../utils/fileHelper");
 const sampleRepo = require("../repositories/sampleRepo");
+const { VerifMIME } = require("../utils/fileSecurity");
 
 maxSize = 5 * 1024 * 1024; // 10 MB
 
