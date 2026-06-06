@@ -50,7 +50,7 @@ testUtils.createTestButton("Test Login - Sanitización y Longitud de Contraseña
     const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'pepona', password: '123' })
+        body: JSON.stringify({ username: 'pepona', password: '12345' })
     });
     
     const data = await response.json();
