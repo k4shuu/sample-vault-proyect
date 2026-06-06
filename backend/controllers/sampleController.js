@@ -8,10 +8,10 @@
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
 
-class SampleController 
+class SampleController
 {
     // Método para subir un sample y guardarlo en la BD
-    async uploadSample(req, res) 
+    async uploadSample(req, res)
     {
         try
         {
@@ -21,8 +21,13 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
+            if (req.file.size > maxSize) {
+                fileHelper.deleteFile('/uploads/${req.file.filename}');
+                return res.status(413).json({ message: 'Archivo demasiado grande' });
+            }
+
             const { display_name, category, bpm } = req.body;
-            
+
             if (!display_name || !category) {
                 // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
@@ -43,17 +48,17 @@ class SampleController
                 file_path: filePath
             });
 
-            res.status(201).json({ 
-                message: "Sample cargado exitosamente en la biblioteca.", 
+            res.status(201).json({
+                message: "Sample cargado exitosamente en la biblioteca.",
                 id: insertId,
-                path: filePath 
+                path: filePath
             });
         }
         catch (error)
         {
             // En caso de error de DB, intentar limpiar el archivo físico
             if (req.file) fileHelper.deleteFile(`/uploads/${req.file.filename}`);
-            
+
             res.status(500).json({ message: "Error durante la carga del sample.", error: error.message });
         }
     }
@@ -74,16 +79,16 @@ class SampleController
     }
 
     // Eliminar un sample de la biblioteca
-    async deleteSample(req, res) 
+    async deleteSample(req, res)
     {
-        try 
+        try
         {
             const { id } = req.params;
             const userId = req.userId;
 
             // 1. Obtener metadatos para conocer la ruta del archivo físico
             const sample = await sampleRepo.findById(id, userId);
-            
+
             if (!sample) {
                 return res.status(404).json({ message: "El sample no existe o no tienes permisos para eliminarlo." });
             }
@@ -92,8 +97,8 @@ class SampleController
             await sampleRepo.delete(id, userId);
 
             // 3. Eliminación física del archivo (Gestión de recursos)
-            fileHelper.deleteFile(sample.file_path); 
-            
+            fileHelper.deleteFile(sample.file_path);
+
             return res.json({ message: "Registro eliminado y archivo físico removido con éxito." });
         }
         catch (error)

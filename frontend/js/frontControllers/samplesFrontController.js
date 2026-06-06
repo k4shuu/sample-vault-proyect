@@ -75,9 +75,8 @@ async function deleteSample(id) {
 }
 
 // Evento para el formulario de subida
-const maxSize = 5 * 1024 * 1024;
 const uploadForm = document.getElementById('uploadForm');
-if (uploadForm && uploadForm.size < maxSize) {
+if (uploadForm) {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -95,6 +94,4 @@ if (uploadForm && uploadForm.size < maxSize) {
             showModal('Error al subir', error.message);
         }
     });
-} else {
-    showModal('Error', 'El archivo supera el limite de tamaño permitido');
-}
+};

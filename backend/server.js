@@ -91,7 +91,7 @@ else
 
 app.use((err, req, res, next) => {
     if (err && err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({Message: 'Archivo demasiado grande(Max 5MB)'})
+        return res.status(413).json({message: 'Archivo demasiado grande(Max 5MB)'})
     }
     return next(err);
 })
