@@ -23,8 +23,17 @@ class SampleController {
                 });
             }
 
+            const filePathExact = req.file.path; // Ruta exacta del archivo subido
+
+            const isInvalidFile = await VerifMIME(filePathExact);
+
+            if (isInvalidFile) {
+                fileHelper.deleteFile(filePathExact);
+                return res.status(415).json({ message: "El archivo no es un audio valido" });
+            }
+
             if (req.file.size > maxSize) {
-                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                fileHelper.deleteFile(filePathExact);
                 return res
                     .status(413)
                     .json({ message: "Archivo demasiado grande" });
