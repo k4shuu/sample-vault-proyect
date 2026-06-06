@@ -58,11 +58,11 @@ CREATE TABLE samples (
 INSERT INTO roles (name) VALUES ('admin'), ('producer');
 
 -- 8. Datos de prueba iniciales
--- Usuario 'admin' (pass: 12345)
+-- Usuario 'admin' (pass: 123456)
 INSERT INTO users (id, username, password) VALUES (1, 'admin', '$2b$10$05qB5sPpkz4xBPAqwpR7ZewGiFWLcRA4iuZXDyCRRsflwv8V1Sh5u');
 INSERT INTO users_roles (user_id, role_id) VALUES (1, 1); -- Rol Admin
 
--- Usuario 'pepe' (pass: 12345)
+-- Usuario 'pepe' (pass: 123456)
 INSERT INTO users (id, username, password) VALUES (2, 'pepe', '$2b$10$05qB5sPpkz4xBPAqwpR7ZewGiFWLcRA4iuZXDyCRRsflwv8V1Sh5u');
 INSERT INTO users_roles (user_id, role_id) VALUES (2, 2); -- Rol Producer
 
