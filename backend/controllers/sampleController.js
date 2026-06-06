@@ -7,8 +7,9 @@
 
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
+const { VerifMIME }= require('../utils/fileSecurity');
 
-class SampleController 
+class SampleController
 {
     // Método para subir un sample y guardarlo en la BD
     async uploadSample(req, res) 
@@ -20,23 +21,16 @@ class SampleController
             {
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
-            //Importo la libreria de seguridad
-            //la constante es la funcion que verifica los datos
-            const {fileTypeFromFile} = await import('file-type');
 
-            //Ruta exacta definida por Multer
             const filePathExact = req.file.path;
 
-            //Metadatos del archivo
-            const fileMeta = await fileTypeFromFile(filePathExact);
+            const isInvalidfile = await VerifMIME(filePathExact);
 
-            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/x-flac'];
-            if (!fileMeta || !allowedTypes.includes(fileMeta.mime)){
-                fileHelper.deleteFile(`uploads/${req.file.filename}`);
-
-                return res.status(415).json({message:"El archivo no es un audio valido"});
-            };
-
+            if (isInvalidfile) {
+                fileHelper.deleteFile(filePathExact);
+                return res.status(415).json({ message: "El archivo no es un audio valido" }); 
+            }
+            
             const { display_name, category, bpm } = req.body;
             
             if (!display_name || !category) {
