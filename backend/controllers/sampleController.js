@@ -7,8 +7,9 @@
 
 const fileHelper = require('../utils/fileHelper');
 const sampleRepo = require('../repositories/sampleRepo');
+const { VerifMIME }= require('../utils/fileSecurity');
 
-class SampleController 
+class SampleController
 {
     // Método para subir un sample y guardarlo en la BD
     async uploadSample(req, res) 
@@ -21,6 +22,15 @@ class SampleController
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
+            const filePathExact = req.file.path;
+
+            const isInvalidfile = await VerifMIME(filePathExact);
+
+            if (isInvalidfile) {
+                fileHelper.deleteFile(filePathExact);
+                return res.status(415).json({ message: "El archivo no es un audio valido" }); 
+            }
+            
             const { display_name, category, bpm } = req.body;
             
             if (!display_name || !category) {
