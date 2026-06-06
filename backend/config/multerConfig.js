@@ -1,9 +1,9 @@
 /**
-*    Project     : Sample Vault
-*    Author      : Tecnologías Informáticas B - Facultad de Ingeniería - UNMdP
-*    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
-*    Date        : Marzo 2026
-*/
+ *    Project     : Sample Vault
+ *    Author      : Tecnologías Informáticas B - Facultad de Ingeniería - UNMdP
+ *    License     : http://www.gnu.org/licenses/gpl.txt  GNU GPL 3.0
+ *    Date        : Marzo 2026
+ */
 
 /**
  * Importación del módulo multer
@@ -14,38 +14,39 @@
  * o memoria, filtrado de tipos y límites de tamaño, añadiendo un objeto
  * file o files al objeto request.
  */
-const multer = require('multer');
+const multer = require("multer");
 // const path = require('path');
 
 // Configuración de almacenamiento de Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Carpeta donde se guardarán físicamente
+        cb(null, "uploads/"); // Carpeta donde se guardarán físicamente
     },
     filename: (req, file, cb) => {
         // Renombramos el archivo: timestamp + nombre original para que sea único
-        cb(null, Date.now() + '-' + file.originalname);
-    }
+        cb(null, Date.now() + "-" + file.originalname);
+    },
 });
 
 // Filtro para aceptar solo formatos de audio compatibles con HTML5
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac'];
-    if (allowedTypes.includes(file.mimetype))
-    {
+    const allowedTypes = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"];
+    if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
-    }
-    else
-    {
-        cb(new Error('Invalid file type. Only MP3, WAV, OGG and FLAC are allowed.'), false);
+    } else {
+        cb(
+            new Error(
+                "Invalid file type. Only MP3, WAV, OGG and FLAC are allowed.",
+            ),
+            false,
+        );
     }
 };
 
 const upload = multer({
     storage,
     fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024}
 });
 
 // 'audioFile' es el nombre del campo en el formulario
-module.exports = upload.single('audioFile');
+module.exports = upload.single("audioFile");
