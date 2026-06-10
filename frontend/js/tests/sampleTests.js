@@ -1,5 +1,5 @@
 /**
- * Función para asegurar independencia de los tests de samples 
+ * Función para asegurar independencia de los tests de samples
  * y no depender de otro test para tener un token de sesión válido
  */
  async function okLogin()
@@ -22,19 +22,19 @@
     // 1. Asegurar y guardar una sesión válida
     await okLogin();
     const token = localStorage.getItem('test_token');
-    
+
     // 2. Realizar la petición
     const response = await fetch('/api/samples/my-samples', {
         headers: { 'Authorization': `Bearer ${token}` }
     });
-    
+
     const data = await response.json();
     testUtils.log(data);
     if (response.ok) testUtils.setSuccess(btn);
 });
 
 /**
- * Test: POST /api/samples/upload (Simulado)
+ * Test: POST /api/samples/upload
  */
 testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
     // 1. Asegurar y guardar una sesión válida
@@ -76,19 +76,19 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         // 1. Asegurar sesión válida y obtener token
         await okLogin();
         const token = localStorage.getItem('test_token');
-        
-        // 2. Crear el FormData con el error a propósito 
+
+        // 2. Crear el FormData con el error a propósito
         const formData = new FormData();
         formData.append('display_name', 'Test Loop Pedagogico');
         formData.append('category', 'Drums');
-        formData.append('bpm', '   '); 
+        formData.append('bpm', '   ');
 
         const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
         const audioBlob = await audioResponse.blob();
 
         formData.append('audioFile', audioBlob, 'DRUM_LOOP_01.wav');
 
-        // 3. ENVIAR LA PETICIÓN AL BACKEND 
+        // 3. ENVIAR LA PETICIÓN AL BACKEND
         const response = await fetch('/api/samples/upload', {
             method: 'POST',
             headers: {
@@ -102,7 +102,7 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         if (response.status === 400) {
             const data = await response.json();
             testUtils.log(`Respuesta correcta del servidor (Status 400): ${data.message || 'BPM inválido'}`);
-            testUtils.setSuccess(btn); 
+            testUtils.setSuccess(btn);
         } else {
             testUtils.log(`Fallo el test: Se esperaba un Status 400 pero se recibió un Status ${response.status}`);
         }
