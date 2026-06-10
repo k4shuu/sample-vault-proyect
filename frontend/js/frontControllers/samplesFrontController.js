@@ -27,7 +27,7 @@ function renderSamplesTable(samples) {
         // Celda Nombre
         const tdName = document.createElement('td');
         tdName.textContent = s.display_name;
-        
+
         // Celda Categoría
         const tdCat = document.createElement('td');
         const spanCat = document.createElement('span');
@@ -74,11 +74,18 @@ async function deleteSample(id) {
     }
 }
 
+const MAX_SIZE = 5*1024*1024; // 5MB
 // Evento para el formulario de subida
 const uploadForm = document.getElementById('uploadForm');
 if (uploadForm) {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const file = document.getElementById('audioFile').files[0];
+
+        if (file.size > MAX_SIZE) {
+            showModal('Error', `Archivo demasiado grande`);
+            return;
+        }
         const formData = new FormData();
         formData.append('display_name', document.getElementById('display_name').value);
         formData.append('category', document.getElementById('category').value);
@@ -94,4 +101,4 @@ if (uploadForm) {
             showModal('Error al subir', error.message);
         }
     });
-}
+};
