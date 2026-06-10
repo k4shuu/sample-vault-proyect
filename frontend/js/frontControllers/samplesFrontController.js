@@ -73,7 +73,8 @@ async function deleteSample(id) {
         showModal('Error', error.message);
     }
 }
-
+const minbpm = 20;
+const maxbpm = 300;
 const MAX_SIZE = 5*1024*1024; // 5MB
 // Evento para el formulario de subida
 const uploadForm = document.getElementById('uploadForm');
@@ -86,6 +87,19 @@ if (uploadForm) {
             showModal('Error', `Archivo demasiado grande`);
             return;
         }
+        const bpm_=file.bpm;
+         if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
+            showModal('Error', `BPM inválido`);
+            return;
+        }
+
+        const bpm = Number(bpm_);
+
+        if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
+            showModal('Error', `BPM invalido`);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('display_name', document.getElementById('display_name').value);
         formData.append('category', document.getElementById('category').value);
