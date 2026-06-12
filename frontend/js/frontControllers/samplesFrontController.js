@@ -81,6 +81,7 @@ const uploadForm = document.getElementById('uploadForm');
 if (uploadForm) {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const file = document.getElementById('audioFile').files[0];
 
         if (file.size > MAX_SIZE) {
