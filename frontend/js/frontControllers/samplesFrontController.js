@@ -89,14 +89,14 @@ if (uploadForm) {
         }
         const bpm_=file.bpm;
          if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
-            showModal('Error', `BPM inválido`);
+            showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
             return;
         }
 
         const bpm = Number(bpm_);
 
         if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
-            showModal('Error', `BPM invalido`);
+            showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
             return;
         }
 
