@@ -81,39 +81,38 @@ const uploadForm = document.getElementById('uploadForm');
 if (uploadForm) {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        try{
+            const file = document.getElementById('audioFile').files[0];
 
-        const file = document.getElementById('audioFile').files[0];
+            if (file.size > MAX_SIZE) {
+                showModal('Error', `Archivo demasiado grande`);
+                return;
+            }
+            const bpm_=file.bpm;
+            if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
+                showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
+                return;
+            }
 
-        if (file.size > MAX_SIZE) {
-            showModal('Error', `Archivo demasiado grande`);
-            return;
-        }
-        const bpm_=file.bpm;
-         if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
-            showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
-            return;
-        }
+            const bpm = Number(bpm_);
 
-        const bpm = Number(bpm_);
+            if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
+                showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
+                return;
+            }
 
-        if (isNaN(bpm) || !Number.isInteger(bpm) || bpm < minbpm || bpm > maxbpm) {
-            showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
-            return;
-        }
+            const formData = new FormData();
+            formData.append('display_name', document.getElementById('display_name').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('bpm', document.getElementById('bpm').value);
+            formData.append('audioFile', document.getElementById('audioFile').files[0]);
 
-        const formData = new FormData();
-        formData.append('display_name', document.getElementById('display_name').value);
-        formData.append('category', document.getElementById('category').value);
-        formData.append('bpm', document.getElementById('bpm').value);
-        formData.append('audioFile', document.getElementById('audioFile').files[0]);
-
-        try {
             await apiService.request('/samples/upload', 'POST', formData, true);
             showModal('Éxito', 'Sample guardado.');
             uploadForm.reset();
             loadSamples();
         } catch (error) {
-            showModal('Error al subir', error.message);
+            showModal('Error', error.message || 'Error inesperado al procesar el archivo');
         }
     });
 };
