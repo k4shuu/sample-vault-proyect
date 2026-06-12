@@ -101,7 +101,7 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         // 4. ANALIZAR LA RESPUESTA DEL BACKEND
         if (response.status === 400) {
             const data = await response.json();
-            testUtils.log(`Respuesta correcta del servidor (Status 400): ${data.message || 'BPM inválido'}`);
+            testUtils.log(`Respuesta del servidor (Status 400): ${data.message || 'BPM inválido'}`);
             testUtils.setSuccess(btn);
         } else {
             testUtils.log(`Fallo el test: Se esperaba un Status 400 pero se recibió un Status ${response.status}`);
