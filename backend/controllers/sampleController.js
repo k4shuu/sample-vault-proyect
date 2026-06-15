@@ -34,7 +34,7 @@ class SampleController {
                 return res.status(415).json({ message: "El archivo no es un audio valido" });
             }
 
-            if (req.file.size > maxSize) {
+            if (req.file.size != undefined && req.file.size > maxSize) {
                 fileHelper.deleteFile(filePathExact);
                 return res
                     .status(413)
