@@ -88,7 +88,7 @@ if (uploadForm) {
                 showModal('Error', `Archivo demasiado grande`);
                 return;
             }
-            const bpm_=file.bpm;
+            const bpm_ = document.getElementById('bpm').value;
             if (bpm_ === undefined || bpm_ === null || String(bpm_).trim() === "") {
                 showModal('Error', `BPM inválido. Ingrese un valor numérico correcto`);
                 return;
