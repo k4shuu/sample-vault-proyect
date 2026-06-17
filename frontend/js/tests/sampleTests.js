@@ -42,7 +42,7 @@ testUtils.createTestButton("Test Subir Sample (Simulado)", async (btn) => {
     const token = localStorage.getItem('test_token');
 
     // 2. Obtener archivo de audio real desde la carpeta de tests
-    const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
+    const audioResponse = await fetch('/js/tests/audioTests/DRUM_LOOP_01.wav');
     const audioBlob = await audioResponse.blob();
 
     // 3. Crear FormData con el archivo real
@@ -83,7 +83,7 @@ testUtils.createTestButton("Test Subir Sample - Error por bpm invalido", async (
         formData.append('category', 'Drums');
         formData.append('bpm', '   ');
 
-        const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
+        const audioResponse = await fetch('/js/tests/audioTests/DRUM_LOOP_01.wav');
         const audioBlob = await audioResponse.blob();
 
         formData.append('audioFile', audioBlob, 'DRUM_LOOP_01.wav');
@@ -143,7 +143,7 @@ testUtils.createTestButton("Test Archivo Limite Peso", async (btn) => {
 
     const size = 10 * 1024 * 1024 + 1;
 
-    const audioResponse = await fetch('/js/tests/DRUM_LOOP_01.wav');
+    const audioResponse = await fetch('/js/tests/audioTests/DRUM_LOOP_01.wav');
     const audioBlob = await audioResponse.blob();
 
     const bigBlob = new Blob([audioBlob, new Uint8Array(size - audioBlob.size)], { type: 'audio/wav' });
